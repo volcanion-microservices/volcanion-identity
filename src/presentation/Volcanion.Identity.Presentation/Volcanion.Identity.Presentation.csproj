@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>795ac131-9aa1-4f71-9ccb-66bfbf192f76</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.10" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+    <PackageReference Include="Serilog" Version="4.1.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\Volcanion.Core.Common\Volcanion.Core.Common.csproj" />
+    <ProjectReference Include="..\..\core\Volcanion.Core.Infrastructure\Volcanion.Core.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\core\Volcanion.Core.Models\Volcanion.Core.Models.csproj" />
+    <ProjectReference Include="..\..\core\Volcanion.Core.Presentation\Volcanion.Core.Presentation.csproj" />
+    <ProjectReference Include="..\..\core\Volcanion.Core.ServiceHandler\Volcanion.Core.ServiceHandler.csproj" />
+    <ProjectReference Include="..\Volcanion.Identity.Models\Volcanion.Identity.Models.csproj" />
+    <ProjectReference Include="..\Volcanion.Identity.ServiceHandler\Volcanion.Identity.ServiceHandler.csproj" />
+  </ItemGroup>
+
+</Project>
