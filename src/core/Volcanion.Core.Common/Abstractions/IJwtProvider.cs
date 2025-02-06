@@ -1,8 +1,7 @@
 ﻿using Volcanion.Core.Models.Enums;
 using Volcanion.Core.Models.Jwt;
-using Volcanion.Identity.Models.Entities;
 
-namespace Volcanion.Identity.Infrastructure.Abstractions;
+namespace Volcanion.Core.Common.Abstractions;
 
 /// <summary>
 /// IJwtProvider
@@ -12,7 +11,7 @@ public interface IJwtProvider
     /// <summary>
     /// GenerateJwt
     /// </summary>
-    /// <param name="account"></param>
+    /// <param name="data"></param>
     /// <param name="audience"></param>
     /// <param name="issuer"></param>
     /// <param name="allowedOrigins"></param>
@@ -21,7 +20,7 @@ public interface IJwtProvider
     /// <param name="type"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public string GenerateJwt(Account account, string audience, string issuer, List<string> allowedOrigins, List<string> groupAccess, ResourceAccess resourceAccess, JwtType type);
+    public string GenerateJwt<T>(T data, string audience, string issuer, List<string> allowedOrigins, List<string> groupAccess, ResourceAccess resourceAccess, JwtType type);
 
     /// <summary>
     /// ValidateJwt
@@ -30,7 +29,7 @@ public interface IJwtProvider
     /// <param name="type"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public bool ValidateJwt(string jwt, JwtType type);
+    public bool ValidateJwt<T>(string jwt, JwtType type);
 
     /// <summary>
     /// DecodeJwt
@@ -38,7 +37,7 @@ public interface IJwtProvider
     /// <param name="token"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    public (JwtHeader? header, JwtPayload? payload) DecodeJwt(string token);
+    public (JwtHeader? header, JwtPayload<T>? payload) DecodeJwt<T>(string token);
 
     /// <summary>
     /// SplitJwt

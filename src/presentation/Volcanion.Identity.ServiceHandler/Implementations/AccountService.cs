@@ -47,11 +47,12 @@ internal class AccountService : BaseService<Account, IAccountRepository>, IAccou
     /// <param name="repository"></param>
     /// <param name="logger"></param>
     /// <param name="hashProvider"></param>
-    public AccountService(IAccountRepository repository, ILogger<BaseService<Account, IAccountRepository>> logger, IHashProvider hashProvider, IConfigProvider configProvider, IOptions<AppSettings> options) : base(repository, logger)
+    public AccountService(IAccountRepository repository, ILogger<BaseService<Account, IAccountRepository>> logger, IHashProvider hashProvider, IConfigProvider configProvider, IOptions<AppSettings> options, IRedisCacheProvider redisCacheProvider) : base(repository, logger)
     {
         _hashProvider = hashProvider;
         AllowedOrigin = options.Value.AllowedOrigins;
         Audience = options.Value.Audience;
+        _redisCacheProvider = redisCacheProvider;
     }
 
     /// <inheritdoc />
@@ -73,12 +74,12 @@ internal class AccountService : BaseService<Account, IAccountRepository>, IAccou
 
             // Generate access token
             var refreshToken = "";
-            var accessToken = _jwtProvider.GenerateJwt(accountFind, Audience, account.Issuer, AllowedOrigin.ToList(), groupAccess, resourceAccess, JwtType.AccessToken);
+            var accessToken = _jwtProvider.GenerateJwt(accountFind, Audience, account.Issuer, [.. AllowedOrigin], groupAccess, resourceAccess, JwtType.AccessToken);
 
             // If remember me is true, generate refresh token
             if (account.RememberMe)
             {
-                refreshToken = _jwtProvider.GenerateJwt(accountFind, Audience, account.Issuer, AllowedOrigin.ToList(), groupAccess, resourceAccess, JwtType.RefreshToken);
+                refreshToken = _jwtProvider.GenerateJwt(accountFind, Audience, account.Issuer, [.. AllowedOrigin], groupAccess, resourceAccess, JwtType.RefreshToken);
             }
 
             return new AccountResponse

@@ -17,7 +17,6 @@ public static class IdentityInfrastructureRegister
     {
         services.AddTransient<IAccountRepository, AccountRepository>();
         services.AddTransient<IGrantPermissionRepository, GrantPermissionRepository>();
-        services.AddTransient<IJwtProvider, JwtProvider>();
         services.AddTransient<IPermissionRepository, PermissionRepository>();
         services.AddTransient<IRolePermissionRepository, RolePermissionRepository>();
         services.AddTransient<IRoleRepository, RoleRepository>();

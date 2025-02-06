@@ -1,87 +1,86 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Volcanion.Core.Models.Jwt;
 
 /// <summary>
 /// JwtPayload
 /// </summary>
-public class JwtPayload
+public class JwtPayload<T>
 {
     /// <summary>
     /// Expiration
     /// Token expiration time (timestamp).
     /// </summary>
-    [JsonPropertyName("exp")]
+    [JsonProperty("exp")]
     public long Expiration { get; set; }
 
     /// <summary>
-    /// IssuedAt
+    /// IssuedAt <br/>
     /// Token creation time.
     /// </summary>
-    [JsonPropertyName("iat")]
+    [JsonProperty("iat")]
     public long IssuedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
     /// <summary>
-    /// TokenId
+    /// TokenId <br/>
     /// The ID of the token, to distinguish between tokens.
     /// </summary>
-    [JsonPropertyName("jti")]
+    [JsonProperty("jti")]
     public string TokenId { get; set; } = Guid.NewGuid().ToString();
 
     /// <summary>
-    /// Issuer
+    /// Issuer <br/>
     /// Token issuer, here is the URL of the Identity server.
     /// </summary>
-    [JsonPropertyName("iss")]
-    public string Issuer { get; set; }
+    [JsonProperty("iss")]
+    public string Issuer { get; set; } = string.Empty;
 
     /// <summary>
-    /// Audience
+    /// Subject <br/>
+    /// Subject, the title of the token, or the purpose of the token.
     /// </summary>
-    [JsonPropertyName("aud")]
-    public string Audience { get; set; }
+    [JsonProperty("sub")]
+    public string Subject { get; set; } = string.Empty;
 
     /// <summary>
-    /// Type
+    /// Audience <br/>
+    /// Audience, service that the token is intended for.
     /// </summary>
-    [JsonPropertyName("typ")]
-    public string Type { get; set; } = "Bearer";
+    [JsonProperty("aud")]
+    public string Audience { get; set; } = string.Empty;
 
     /// <summary>
     /// SessionId
     /// </summary>
-    [JsonPropertyName("sid")]
+    [JsonProperty("sid")]
     public string SessionId { get; set; } = Guid.NewGuid().ToString();
 
     /// <summary>
     /// AllowedOrigins
     /// </summary>
-    [JsonPropertyName("allowed-origins")]
-    public List<string> AllowedOrigins { get; set; } = new();
+    [JsonProperty("allowed_origins")]
+    public List<string> AllowedOrigins { get; set; } = [];
 
     /// <summary>
-    /// ResourceAccess
+    /// ResourceAccess <br/>
+    /// Role information, permission information, etc...
     /// </summary>
-    [JsonPropertyName("resource_access")]
-    public ResourceAccess ResourceAccess { get; set; }
+    [JsonProperty("resource_access")]
+    public ResourceAccess ResourceAccess { get; set; } = new();
 
     /// <summary>
-    /// GroupAccess
+    /// GroupAccess <br/>
+    /// Group information, etc...
     /// </summary>
-    [JsonPropertyName("group_access")]
-    public List<string> GroupAccess { get; set; } = new();
+    [JsonProperty("group_access")]
+    public List<string> GroupAccess { get; set; } = [];
 
     /// <summary>
-    /// Name
+    /// ResourceData <br/>
+    /// Account information, user information, etc...
     /// </summary>
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
-
-    /// <summary>
-    /// Email
-    /// </summary>
-    [JsonPropertyName("email")]
-    public string Email { get; set; }
+    [JsonProperty("resource_data")]
+    public T? ResourceData { get; set; }
 
     /// <summary>
     /// Additional properties to convert UNIX timestamp to DateTime
@@ -102,8 +101,8 @@ public class ResourceAccess
     /// <summary>
     /// RoleAccess
     /// </summary>
-    [JsonPropertyName("role_access")]
-    public RoleAccess RoleAccess { get; set; }
+    [JsonProperty("role_access")]
+    public RoleAccess RoleAccess { get; set; } = new();
 }
 
 /// <summary>
@@ -114,6 +113,6 @@ public class RoleAccess
     /// <summary>
     /// Roles
     /// </summary>
-    [JsonPropertyName("roles")]
-    public List<string> Roles { get; set; } = new();
+    [JsonProperty("roles")]
+    public List<string> Roles { get; set; } = [];
 }

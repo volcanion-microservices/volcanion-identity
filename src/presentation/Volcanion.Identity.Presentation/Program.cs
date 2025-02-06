@@ -17,6 +17,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.RegisterIdentityInfrastructure();
 builder.Services.RegisterIdentityService();
 
+// Add json options with default ignore condition to ignore null values
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
@@ -33,7 +34,7 @@ builder.Services.AddRedisCacheService(builder.Configuration.GetSection("Redis"))
 // Configure CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAnyOrigins", policy =>
+    options.AddPolicy("DefaultAllowOrigins", policy =>
     {
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
@@ -54,7 +55,7 @@ builder.Services.AddApiVersioning(x =>
 
 // Add Entity Framework DBContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), b => b.MigrationsAssembly(typeof(ApplicationDbContext).Namespace)));
 
 // use serilog
 configureLogging();
@@ -63,7 +64,7 @@ builder.Host.UseSerilog();
 var app = builder.Build();
 
 // Use the CORS policy
-app.UseCors("AllowAnyOrigins");
+app.UseCors("DefaultAllowOrigins");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

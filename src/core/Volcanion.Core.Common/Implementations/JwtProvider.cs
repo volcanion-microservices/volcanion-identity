@@ -3,10 +3,8 @@ using Newtonsoft.Json;
 using Volcanion.Core.Common.Abstractions;
 using Volcanion.Core.Models.Enums;
 using Volcanion.Core.Models.Jwt;
-using Volcanion.Identity.Infrastructure.Abstractions;
-using Volcanion.Identity.Models.Entities;
 
-namespace Volcanion.Identity.Infrastructure.Implementations;
+namespace Volcanion.Core.Common.Implementations;
 
 /// <inheritdoc/>
 internal class JwtProvider : IJwtProvider
@@ -71,14 +69,14 @@ internal class JwtProvider : IJwtProvider
         _hashProvider = hashProvider;
         _configProvider = configProvider;
         _logger = logger;
-        PrivateKeyFilePath = _configProvider.GetConfigString("PrivateKeyFilePath");
-        PublicKeyFilePath = _configProvider.GetConfigString("PublicKeyFilePath");
-        AccessTokenExpiredTime = _configProvider.GetConfigString("AccessTokenExpiredTime");
-        RefreshTokenExpiredTime = _configProvider.GetConfigString("RefreshTokenExpiredTime");
+        PrivateKeyFilePath = _configProvider.GetConfigString("PrivateKeyFilePath") ?? "";
+        PublicKeyFilePath = _configProvider.GetConfigString("PublicKeyFilePath") ?? "";
+        AccessTokenExpiredTime = _configProvider.GetConfigString("AccessTokenExpiredTime") ?? "";
+        RefreshTokenExpiredTime = _configProvider.GetConfigString("RefreshTokenExpiredTime") ?? "";
     }
 
     /// <inheritdoc/>
-    public (JwtHeader? header, JwtPayload? payload) DecodeJwt(string token)
+    public (JwtHeader? header, JwtPayload<T>? payload) DecodeJwt<T>(string token)
     {
         try
         {
@@ -93,8 +91,8 @@ internal class JwtProvider : IJwtProvider
 
             // Deserialize the jwt
             var header = JsonConvert.DeserializeObject<JwtHeader>(headerJsonStr);
-            var payload = JsonConvert.DeserializeObject<JwtPayload>(payloadJsonStr);
-            
+            var payload = JsonConvert.DeserializeObject<JwtPayload<T>>(payloadJsonStr);
+
             // Return the header and payload
             return (header, payload);
         }
@@ -107,7 +105,7 @@ internal class JwtProvider : IJwtProvider
     }
 
     /// <inheritdoc/>
-    public string GenerateJwt(Account account, string audience, string issuer, List<string> allowedOrigins, List<string> groupAccess, ResourceAccess resourceAccess, JwtType type)
+    public string GenerateJwt<T>(T data, string audience, string issuer, List<string> allowedOrigins, List<string> groupAccess, ResourceAccess resourceAccess, JwtType type)
     {
         try
         {
@@ -139,7 +137,7 @@ internal class JwtProvider : IJwtProvider
             var datetimeOffsetDataCompare = _stringProvider.GenerateDateTimeOffsetFromString(datetimeOffsetDataCompareStr).ToUnixTimeSeconds();
 
             // Generate payload
-            var payload = new JwtPayload
+            var payload = new JwtPayload<T>
             {
                 Audience = audience,
                 Issuer = issuer,
@@ -147,8 +145,7 @@ internal class JwtProvider : IJwtProvider
                 GroupAccess = groupAccess,
                 Expiration = datetimeOffsetDataCompare,
                 ResourceAccess = resourceAccess,
-                Email = account.Email,
-                Name = account.Fullname
+                ResourceData = data
             };
 
             // Generate the jwt
@@ -168,7 +165,7 @@ internal class JwtProvider : IJwtProvider
     }
 
     /// <inheritdoc/>
-    public bool ValidateJwt(string jwt, JwtType type)
+    public bool ValidateJwt<T>(string jwt, JwtType type)
     {
         try
         {
@@ -178,7 +175,7 @@ internal class JwtProvider : IJwtProvider
             {
                 throw new Exception("Jwt is empty.");
             }
-            
+
             // Check if the public key file path is empty
             if (string.IsNullOrEmpty(PublicKeyFilePath))
             {
@@ -210,7 +207,7 @@ internal class JwtProvider : IJwtProvider
             }
 
             var datetimeOffsetDataCompare = _stringProvider.GenerateDateTimeOffsetFromString(datetimeOffsetDataCompareStr).ToUnixTimeSeconds();
-            var payload = DecodeJwt(headerPayload).payload;
+            var payload = DecodeJwt<T>(headerPayload).payload;
 
             // Check if the jwt is expired
             if (datetimeOffsetDataCompare < payload!.Expiration) throw new Exception("Jwt is expired.");
