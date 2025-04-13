@@ -6,22 +6,12 @@ using Volcanion.Core.Common.Abstractions;
 namespace Volcanion.Core.Common.Implementations;
 
 /// <inheritdoc/>
-public class ConfigProvider : IConfigProvider
+/// <summary>
+/// Constructor
+/// </summary>
+/// <param name="logger"></param>
+public class ConfigProvider(ILogger<ConfigProvider> logger) : IConfigProvider
 {
-    /// <summary>
-    /// Logger
-    /// </summary>
-    private ILogger<ConfigProvider> Logger { get; set; }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="logger"></param>
-    public ConfigProvider(ILogger<ConfigProvider> logger)
-    {
-        Logger = logger;
-    }
-
     /// <inheritdoc/>
     public object? GetConfig(string key)
     {
@@ -34,7 +24,7 @@ public class ConfigProvider : IConfigProvider
         }
         catch (Exception ex)
         {
-            Logger.LogError("error", ex.ToString());
+            logger.LogError(ex, "[ConfigProvider][GetConfigString] Error on provider");
             return null;
         }
     }
@@ -48,7 +38,7 @@ public class ConfigProvider : IConfigProvider
         }
         catch (Exception ex)
         {
-            Logger.LogError("error", ex.ToString());
+            logger.LogError(ex, "[ConfigProvider][GetConfigString] Error on provider");
             return null;
         }
     }

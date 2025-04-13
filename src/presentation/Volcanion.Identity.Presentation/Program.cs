@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Volcanion.Core.Common;
 using Volcanion.Core.Common.Models.Redis;
@@ -8,6 +6,7 @@ using Volcanion.Identity.Models.Context;
 using Volcanion.Identity.Infrastructure;
 using Volcanion.Identity.ServiceHandler;
 using Serilog;
+using Asp.Versioning;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,10 +91,8 @@ static void configureLogging()
         .AddEnvironmentVariables()
     .Build();
 
-    if (configuration == null)
+    if (configuration != null)
     {
-        Console.WriteLine("configuration is null");
+        LogProvider.LoggerSetting(configuration, environment);
     }
-
-    LogProvider.LoggerSetting(configuration, environment);
 }

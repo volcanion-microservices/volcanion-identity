@@ -37,5 +37,5 @@ public class Account : BaseEntity
     /// <summary>
     /// GrantPermissions
     /// </summary>
-    public ICollection<GrantPermission> GrantPermissions { get; set; }
+    public ICollection<GrantPermission>? GrantPermissions { get; set; } = [];
 }

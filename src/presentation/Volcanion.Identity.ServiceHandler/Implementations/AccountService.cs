@@ -47,12 +47,13 @@ internal class AccountService : BaseService<Account, IAccountRepository>, IAccou
     /// <param name="repository"></param>
     /// <param name="logger"></param>
     /// <param name="hashProvider"></param>
-    public AccountService(IAccountRepository repository, ILogger<BaseService<Account, IAccountRepository>> logger, IHashProvider hashProvider, IConfigProvider configProvider, IOptions<AppSettings> options, IRedisCacheProvider redisCacheProvider) : base(repository, logger)
+    public AccountService(IAccountRepository repository, ILogger<BaseService<Account, IAccountRepository>> logger, IHashProvider hashProvider, IRedisCacheProvider redisCacheProvider, IJwtProvider jwtProvider, IOptions<AppSettings> options) : base(repository, logger)
     {
         _hashProvider = hashProvider;
-        AllowedOrigin = options.Value.AllowedOrigins;
-        Audience = options.Value.Audience;
         _redisCacheProvider = redisCacheProvider;
+        Audience = options.Value.Audience;
+        AllowedOrigin = options.Value.AllowedOrigins!;
+        _jwtProvider = jwtProvider;
     }
 
     /// <inheritdoc />
@@ -91,14 +92,13 @@ internal class AccountService : BaseService<Account, IAccountRepository>, IAccou
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[AccountService][Login] Error on service");
             throw new Exception(ex.Message);
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccountResponse> RefreshToken(TokenRequest request)
+    public async Task<AccountResponse?> RefreshToken(TokenRequest request)
     {
         try
         {
@@ -106,14 +106,13 @@ internal class AccountService : BaseService<Account, IAccountRepository>, IAccou
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[AccountService][RefreshToken] Error on service");
             throw new Exception(ex.Message);
         }
     }
 
     /// <inheritdoc />
-    public async Task<AccountResponse> Register(AccountRegister account)
+    public async Task<AccountResponse?> Register(AccountRegister account)
     {
         try
         {
@@ -121,8 +120,7 @@ internal class AccountService : BaseService<Account, IAccountRepository>, IAccou
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[AccountService][Register] Error on service");
             throw new Exception(ex.Message);
         }
     }

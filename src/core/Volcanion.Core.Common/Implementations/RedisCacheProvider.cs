@@ -7,33 +7,17 @@ using Volcanion.Core.Common.Models.Redis;
 namespace Volcanion.Core.Common.Implementations;
 
 /// <inheritdoc/>
-public class RedisCacheProvider : IRedisCacheProvider
+/// <summary>
+/// Constructor
+/// </summary>
+/// <param name="cache"></param>
+/// <param name="redisOptionsMonitor"></param>
+public class RedisCacheProvider(IDistributedCache cache, IOptionsMonitor<RedisOptions> redisOptionsMonitor) : IRedisCacheProvider
 {
-    /// <summary>
-    /// IDistributedCache
-    /// </summary>
-    private readonly IDistributedCache _cache;
-
-    /// <summary>
-    /// RedisOptions
-    /// </summary>
-    private readonly IOptionsMonitor<RedisOptions> _redisOptionsMonitor;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="cache"></param>
-    /// <param name="redisOptionsMonitor"></param>
-    public RedisCacheProvider(IDistributedCache cache, IOptionsMonitor<RedisOptions> redisOptionsMonitor)
-    {
-        _cache = cache;
-        _redisOptionsMonitor = redisOptionsMonitor;
-    }
-
     /// <inheritdoc/>
-    public async Task<T> GetCacheAsync<T>(string key)
+    public async Task<T?> GetCacheAsync<T>(string key)
     {
-        var jsonData = await _cache.GetStringAsync(key);
+        var jsonData = await cache.GetStringAsync(key);
 
         if (jsonData is null)
         {
@@ -44,9 +28,9 @@ public class RedisCacheProvider : IRedisCacheProvider
     }
 
     /// <inheritdoc/>
-    public async Task<T> SetCacheAsync<T>(string key, T value)
+    public async Task<T?> SetCacheAsync<T>(string key, T value)
     {
-        var optionsCache = _redisOptionsMonitor.CurrentValue;
+        var optionsCache = redisOptionsMonitor.CurrentValue;
         var options = new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = optionsCache.AbsoluteExpireTime,
@@ -55,7 +39,7 @@ public class RedisCacheProvider : IRedisCacheProvider
 
         var jsonData = JsonSerializer.Serialize(value);
 
-        await _cache.SetStringAsync(key, jsonData, options);
+        await cache.SetStringAsync(key, jsonData, options);
 
         return value;
     }

@@ -11,25 +11,24 @@ public class HashProvider : IHashProvider
     /// <inheritdoc/>
     public string HashPassword(string password)
     {
-        return new PasswordHasher<object>().HashPassword(null, password);
+        return new PasswordHasher<object>().HashPassword(new(), password);
     }
 
     /// <inheritdoc/>
     public bool VerifyPassword(string hashedPassword, string password)
     {
-        return new PasswordHasher<object>().VerifyHashedPassword(null, hashedPassword, password) != PasswordVerificationResult.Failed;
+        return new PasswordHasher<object>().VerifyHashedPassword(new(), hashedPassword, password) != PasswordVerificationResult.Failed;
     }
 
     /// <inheritdoc/>
     public string CreateMD5(string input)
     {
         // Use input string to calculate MD5 hash
-        using MD5 md5 = MD5.Create();
         byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-        byte[] hashBytes = md5.ComputeHash(inputBytes);
+        byte[] hashBytes = MD5.HashData(inputBytes);
 
         // Convert the byte array to hexadecimal string
-        StringBuilder sb = new StringBuilder();
+        var sb = new StringBuilder();
 
         for (int i = 0; i < hashBytes.Length; i++)
         {
@@ -46,7 +45,7 @@ public class HashProvider : IHashProvider
         byte[] keyByte = encoding.GetBytes(secret);
         byte[] messageBytes = encoding.GetBytes(input);
 
-        using HMACSHA256 hmacsha256 = new HMACSHA256(keyByte);
+        using var hmacsha256 = new HMACSHA256(keyByte);
         byte[] hashmessage = hmacsha256.ComputeHash(messageBytes);
         return Convert.ToBase64String(hashmessage);
     }
@@ -70,11 +69,7 @@ public class HashProvider : IHashProvider
     {
         byte[] dataBytes = Encoding.UTF8.GetBytes(data);
         byte[] hashBytes;
-
-        using (SHA512 sha512 = SHA512.Create())
-        {
-            hashBytes = sha512.ComputeHash(dataBytes);
-        }
+        hashBytes = SHA512.HashData(dataBytes);
 
         RSA rsa = RSA.Create();
         rsa.ImportFromPem(File.ReadAllText(privateKeyFile));
@@ -93,11 +88,7 @@ public class HashProvider : IHashProvider
         // Hash the data again with SHA512
         byte[] dataBytes = Encoding.UTF8.GetBytes(data);
         byte[] hashBytes;
-
-        using (SHA512 sha512 = SHA512.Create())
-        {
-            hashBytes = sha512.ComputeHash(dataBytes);
-        }
+        hashBytes = SHA512.HashData(dataBytes);
 
         // Verify the signature with the public key
         return rsa.VerifyHash(hashBytes, signedHash, HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1);

@@ -7,14 +7,10 @@ using Volcanion.Identity.Models.Entities;
 
 namespace Volcanion.Identity.Infrastructure.Implementations;
 
-internal class AccountRepository : BaseRepository<Account, ApplicationDbContext>, IAccountRepository
+internal class AccountRepository(ApplicationDbContext context, ILogger<BaseRepository<Account, ApplicationDbContext>> logger) : BaseRepository<Account, ApplicationDbContext>(context, logger), IAccountRepository
 {
-    public AccountRepository(ApplicationDbContext context, ILogger<BaseRepository<Account, ApplicationDbContext>> logger) : base(context, logger)
-    {
-    }
-
     /// <inheritdoc/>
-    public async Task<Account> GetAccountByEmail(string email)
+    public async Task<Account?> GetAccountByEmail(string email)
     {
         try
         {

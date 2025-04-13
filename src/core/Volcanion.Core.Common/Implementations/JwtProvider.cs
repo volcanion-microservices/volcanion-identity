@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Serilog.Core;
 using Volcanion.Core.Common.Abstractions;
 using Volcanion.Core.Models.Enums;
 using Volcanion.Core.Models.Jwt;
@@ -98,8 +99,7 @@ internal class JwtProvider : IJwtProvider
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[JwtProvider][DecodeJwt] Error on provider");
             throw new Exception(ex.Message);
         }
     }
@@ -117,7 +117,7 @@ internal class JwtProvider : IJwtProvider
             };
 
             // Generate expiration time
-            var datetimeOffsetData = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var datetimeOffsetData = DateTimeOffset.Now.ToUnixTimeSeconds();
             var datetimeOffsetDataCompareStr = "";
 
             if (type == JwtType.AccessToken)
@@ -153,13 +153,12 @@ internal class JwtProvider : IJwtProvider
             var jwtPayload = JsonConvert.SerializeObject(payload);
             var jwtHeaderBase64 = _hashProvider.Base64Encode(jwtHeader);
             var jwtPayloadBase64 = _hashProvider.Base64Encode(jwtPayload);
-            var jwtSignature = _hashProvider.HashSHA512($"{jwtHeaderBase64}.{jwtPayloadBase64}", PrivateKeyFilePath);
+            var jwtSignature = _hashProvider.HashSHA512($"{jwtHeaderBase64}.{jwtPayloadBase64}", PublicKeyFilePath);
             return $"{jwtHeaderBase64}.{jwtPayloadBase64}.{jwtSignature}";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[JwtProvider][GenerateJwt] Error on provider");
             throw new Exception(ex.Message);
         }
     }
@@ -190,7 +189,7 @@ internal class JwtProvider : IJwtProvider
                 throw new Exception("Jwt signature is not valid.");
             }
 
-            var datetimeOffsetData = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            var datetimeOffsetData = DateTimeOffset.Now.ToUnixTimeSeconds();
             var datetimeOffsetDataCompareStr = "";
 
             if (type == JwtType.AccessToken)
@@ -214,14 +213,13 @@ internal class JwtProvider : IJwtProvider
             var sessionId = payload.SessionId;
             var cacheSessionId = _redisCacheProvider.GetCacheAsync<string>(sessionId).Result;
 
-            if (cacheSessionId.Equals("Expired")) throw new Exception("Session is expired.");
+            if (cacheSessionId != null && cacheSessionId.Equals("Expired")) throw new Exception("Session is expired.");
 
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[JwtProvider][ValidateJwt] Error on provider");
             throw new Exception(ex.Message);
         }
     }
@@ -240,8 +238,7 @@ internal class JwtProvider : IJwtProvider
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.Message);
-            _logger.LogError(ex.StackTrace);
+            _logger.LogError(ex, "[JwtProvider][SplitJwt] Error on provider");
             throw new Exception(ex.Message);
         }
     }

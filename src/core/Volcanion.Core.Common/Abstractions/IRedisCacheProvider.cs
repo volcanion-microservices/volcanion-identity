@@ -11,7 +11,7 @@ public interface IRedisCacheProvider
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
     /// <returns></returns>
-    Task<T> GetCacheAsync<T>(string key);
+    Task<T?> GetCacheAsync<T>(string key);
 
     /// <summary>
     /// SetCacheAsync
@@ -20,5 +20,5 @@ public interface IRedisCacheProvider
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    Task<T> SetCacheAsync<T>(string key, T value);
+    Task<T?> SetCacheAsync<T>(string key, T value);
 }

@@ -10,7 +10,7 @@ public class AccountResponse
     /// <summary>
     /// Account
     /// </summary>
-    public Account Account { get; set; }
+    public Account? Account { get; set; }
 
     /// <summary>
     /// AccessToken

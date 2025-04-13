@@ -6,9 +6,6 @@ using Volcanion.Identity.Models.Entities;
 
 namespace Volcanion.Identity.Infrastructure.Implementations;
 
-internal class PermissionRepository : BaseRepository<Permission, ApplicationDbContext>, IPermissionRepository
+internal class PermissionRepository(ApplicationDbContext context, ILogger<BaseRepository<Permission, ApplicationDbContext>> logger) : BaseRepository<Permission, ApplicationDbContext>(context, logger), IPermissionRepository
 {
-    public PermissionRepository(ApplicationDbContext context, ILogger<BaseRepository<Permission, ApplicationDbContext>> logger) : base(context, logger)
-    {
-    }
 }

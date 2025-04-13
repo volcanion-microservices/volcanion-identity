@@ -178,7 +178,7 @@ public class StringProvider : IStringProvider
         // Check if the number part is a valid number
         if (!int.TryParse(numberPart, out int value)) throw new ArgumentException("Invalid numeric value.");
         // Get the current time
-        var res = DateTimeOffset.UtcNow;
+        var res = DateTimeOffset.Now;
 
         // Add the value to the current time
         return timeUnit switch

@@ -10,5 +10,5 @@ public interface IAccountRepository : IGenericRepository<Account>
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>
-    Task<Account> GetAccountByEmail(string email);
+    Task<Account?> GetAccountByEmail(string email);
 }

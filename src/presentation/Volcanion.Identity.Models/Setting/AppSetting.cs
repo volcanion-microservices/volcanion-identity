@@ -8,10 +8,10 @@ public class AppSettings
     /// <summary>
     /// Audience
     /// </summary>
-    public string[] AllowedOrigins { get; set; }
+    public string[]? AllowedOrigins { get; set; } = [];
 
     /// <summary>
     /// Issuer
     /// </summary>
-    public string Audience { get; set; }
+    public string Audience { get; set; } = null!;
 }

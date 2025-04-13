@@ -25,15 +25,15 @@ public class RolePermission : BaseEntity
     /// <summary>
     /// Role
     /// </summary>
-    public Role Role { get; set; }
+    public Role? Role { get; set; }
 
     /// <summary>
     /// Permission
     /// </summary>
-    public Permission Permission { get; set; }
+    public Permission? Permission { get; set; }
 
     /// <summary>
     /// GrantPermission
     /// </summary>
-    public GrantPermission GrantPermission { get; set; }
+    public GrantPermission? GrantPermission { get; set; }
 }

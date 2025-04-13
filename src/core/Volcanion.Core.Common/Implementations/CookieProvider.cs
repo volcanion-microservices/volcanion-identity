@@ -4,22 +4,12 @@ using Volcanion.Core.Common.Abstractions;
 namespace Volcanion.Core.Common.Implementations;
 
 /// <inheritdoc/>
-public class CookieProvider : ICookieProvider
+/// <summary>
+/// Constructor
+/// </summary>
+/// <param name="httpContextAccessor"></param>
+public class CookieProvider(IHttpContextAccessor httpContextAccessor) : ICookieProvider
 {
-    /// <summary>
-    /// IHttpContextAccessor
-    /// </summary>
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="httpContextAccessor"></param>
-    public CookieProvider(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
-
     /// <inheritdoc/>
     public void Set(string key, string value, int? expireTime = 3600)
     {
@@ -30,25 +20,25 @@ public class CookieProvider : ICookieProvider
             Expires = DateTime.Now.AddMinutes(expireTime.Value)
         };
 
-        _httpContextAccessor.HttpContext.Response.Cookies.Append(key, value, option);
+        httpContextAccessor.HttpContext.Response.Cookies.Append(key, value, option);
     }
 
     /// <inheritdoc/>
     public string Get(string key)
     {
-        return _httpContextAccessor.HttpContext.Request.Cookies[key];
+        return httpContextAccessor.HttpContext.Request.Cookies[key]!;
     }
 
     /// <inheritdoc/>
     public void Remove(string key)
     {
-        _httpContextAccessor.HttpContext.Response.Cookies.Delete(key);
+        httpContextAccessor.HttpContext.Response.Cookies.Delete(key);
     }
 
     /// <inheritdoc/>
     public void RemoveAlls()
     {
-        foreach (string key in _httpContextAccessor.HttpContext.Request.Cookies.Keys)
+        foreach (string key in httpContextAccessor.HttpContext.Request.Cookies.Keys)
         {
             Remove(key);
         }

@@ -10,10 +10,10 @@ public class Permission : BaseEntity
     /// <summary>
     /// Name
     /// </summary>
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     /// <summary>
     /// RolePermissions
     /// </summary>
-    public ICollection<RolePermission> RolePermissions { get; set; }
+    public ICollection<RolePermission>? RolePermissions { get; set; } = [];
 }

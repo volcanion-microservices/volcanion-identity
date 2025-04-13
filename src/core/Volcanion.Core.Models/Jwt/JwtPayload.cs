@@ -19,7 +19,7 @@ public class JwtPayload<T>
     /// Token creation time.
     /// </summary>
     [JsonProperty("iat")]
-    public long IssuedAt { get; set; } = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    public long IssuedAt { get; set; } = DateTimeOffset.Now.ToUnixTimeSeconds();
 
     /// <summary>
     /// TokenId <br/>
